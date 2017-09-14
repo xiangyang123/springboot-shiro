@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" >
+<head>
+    <title>系统登录</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <link rel="stylesheet" th:href="@{easyui/default/easyui.css}" />
+    <link rel="stylesheet" th:href="@{easyui/icon.css}" />
+    <script th:src="@{easyui/jquery-1.4.2.min.js}"></script>
+    <script th:src="@{easyui/jquery.easyui.min.js}"></script>
+    <script th:src="@{easyui/Cookie.js}"></script>
+    <script type="text/javascript">
+        $(function() {
+            $("#loginWindow").window({
+                title: '登陆窗口',
+                width: 290,
+                height: 180,
+                modal: true,
+                shadow: false,
+                closable: false,
+                maximizable: false,
+                minimizable: false,
+                collapsible: false,
+                resizable: false
+            });
+
+            $("#btnLogin").click(function() {
+                var username = $("#username").val();
+                var password = $("#password").val();
+                loginSys(username, password);
+            });
+
+            $("#aboutSys").click(function() {
+                $.messager.alert('注册', '暂时未开放!', 'info');
+            });
+        });
+
+        //登陆操作
+        function loginSys(username,password) {
+            $.ajax({
+                type: "POST",
+                dataType: "json",
+                url: "/login",
+                data: { username: username, password: password },
+                success: function(json) {
+
+                    if (json.ret.status == 1) {
+                        window.location.href = "/home";
+                    }
+                    else {
+                        $.messager.alert('错误', json.ret.msg, 'error');
+                    }
+                },
+                error: function(XMLHttpRequest, textStatus, errorThrown) {
+                    alert(XMLHttpRequest.status);
+                    alert(XMLHttpRequest.readyState);
+                    alert(textStatus);
+                    $.messager.alert('错误', '获取账号信息失败...请联系管理员!', 'error');
+                }
+            });
+        }
+    </script>
+</head>
+<body>
+<div id="loginWindow" class="easyui-window" title="登陆窗口" iconCls="icon-login" style="width:300px;height:180px;padding:5px;background: #fafafa;">
+    <div border="false" style=" padding-left:30px; background:#fff;border:1px solid #ccc;">
+        <form>
+            <table>
+                <tr>
+                    <td>账号：</td>
+                    <td><input id="username" style="width: 150px;" /></td>
+                </tr>
+                <tr>
+                    <td>密码：</td>
+                    <td><input type="password" id="password" style="width: 150px;" /></td>
+                </tr>
+            </table>
+        </form>
+    </div>
+    <div border="false" style="text-align:center;height:30px;line-height:30px; margin-top:6px;">
+        <a class="easyui-linkbutton" iconCls="icon-ok" href="javascript:void(0)" id="btnLogin">登陆</a>
+        <a class="easyui-linkbutton" iconCls="icon-thereof" href="javascript:void(0)" id="aboutSys">注册</a>
+    </div>
+</div>
+</body>
+</html>

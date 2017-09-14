@@ -1,0 +1,84 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:fragment="htmlhead">
+    <title>用户管理</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <link rel="stylesheet" th:href="@{easyui/icon.css}"/>
+    <link rel="stylesheet" th:href="@{easyui/default/easyui.css}" />
+    <script th:src="@{easyui/jquery-1.4.2.min.js}"></script>
+    <script th:src="@{easyui/jquery.easyui.min.js}"></script>
+    <script th:src="@{easyui/js/easyui-1.4.2/locale/easyui-lang-zh_CN.js}"></script>
+    <script type="text/javascript">
+        $(function () {
+            var datagrid;  //定义全局变量
+            var editRow = "";//定义当前编辑的行
+            datagrid = $("#dataGrid").datagrid({
+                title: "用户管理",
+                locale: "zh_CN",
+                iconCls: 'icon-save',
+                striped: true,
+                sortOrder: "desc",
+                collapsible: false,
+                url: "userList",
+                columns: [[
+                    { field: 'id', title: 'ID',width:50,align:"center"},
+                    { field: 'name', title: '姓名',width:50,align:"center"},
+                    { field: 'age', title: '年龄',width:50,align:"center"},
+                ]],
+                toolbar: [{
+                    id: 'btnAdd',
+                    text: "添加",
+                    iconCls: 'icon-add',
+                    handler: function () {
+                        $.messager.alert("新增","新增!","info");
+                    }
+                }, {
+                    id: 'btnEdit',
+                    text: "修改",
+                    iconCls: 'icon-edit',
+                    handler: function () {
+                        $.messager.alert("修改","修改!","info");
+                    }
+                }, {
+                    id: 'btnDelete',
+                    text: "删除",
+                    iconCls: 'icon-remove',
+                    handler: function () {
+                        var row = $('#dataGrid').datagrid('getSelected');
+                        var id = row.id;
+                        $.messager.alert("删除","需要删除数据的ID:"+id,"info");
+                        deleteUser(row);
+                    }
+                }],
+                pagination: true,//表示在datagrid设置分页
+                pageList:[1,2,3],
+                rownumbers: true,
+                singleSelect: true,
+            });
+        })
+
+        function deleteUser(row){
+            if(row){
+                $.messager.confirm("系统提示","您确定要删除这条记录吗?",function(r){
+                    if(r){
+                        $.post('userDelete',{delId:row.id},function(result){
+                            if(result.success){
+                                $.messager.alert("系统提示","已成功删除这条记录!");
+                                $("#dg").datagrid("reload");
+                            }else{
+                                $.messager.alert("系统提示",result.errorMsg);
+                            }
+                        },'json');
+                    }
+                });
+            }
+        }
+    </script>
+</head>
+<body>
+<!--数据展示 -->
+<div id="dataGrid">
+</div>
+</body>
+
+</html>
